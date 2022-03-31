@@ -1,7 +1,7 @@
 // Write your helper functions here!
 require('isomorphic-fetch');
 
-function addDestinationInfo(document, name, diameter, star, distance, moons, imageUrl) {
+function addDestinationInfo(document, name, diameter, star, distance, moons, image) {
     // Here is the HTML formatting for our mission target div.
     // format this better cause thats a phat mess
     let missionTarget = document.getElementById('missionTarget');
@@ -14,7 +14,7 @@ function addDestinationInfo(document, name, diameter, star, distance, moons, ima
                     <li>Distance from Earth: ${distance} </li>
                     <li>Number of Moons: ${moons} </li>
                 </ol>
-                <img src="${imageUrl}"></img>
+                <img src="${image}"></img>
     `;
 
 }
@@ -30,7 +30,7 @@ function validateInput(testInput) {
         else if (isNaN(testInput)) {
             return "Not a Number";
     } 
-        else {
+        else if (!isNaN(testInput)) {
             return "Is a Number";
     }
 }
@@ -43,66 +43,81 @@ function validateInput(testInput) {
 // use getElementById()
 // needs to change color and status
 //launchstatus color not usable the way i have it? let launchStatusColor = document.querySelecter("#launchStatus")
-function formSubmission(document, list, pilot, copilot, fuelLevel, cargoLevel) {
-
-    if ((validateInput(pilot) === "Empty") || (validateInput(copilot) === "Empty") || (validateInput(cargoLevel) === "Empty") || (validateInput(fuelLevel) === "Empty")) {
-        alert("Entry for every feild required!");
-        return false;
-    }
-    else if ((validateInput(pilot) === "Is a number") || (validateInput(copilot) === "Is a number") || (validateInput(cargoLevel) === "Is a number") || (validateInput(fuelLevel) === "Is a number")) {
-        alert("Invalid input! Please enter Pilot/Copilot names as text.")
-        return false;
-    }
-    else if ((validateInput(fuelLevel) === "Not a number") || (validateInput(cargoLevel) === "Not a number") || (validateInput(cargoLevel) === "Not a number")) {
-        alert("Invalid input! Please enter Fuel/Cargo Levels as integer(s).")
-        return false
-    }
-
+function formSubmission(document, list, pilot, copilot, fuelLevel, cargoMass) {
 
     let pilotStatus = document.getElementById("pilotStatus");   
     let copilotStatus = document.getElementById("copilotStatus");
     let fuelStatus = document.getElementById("fuelStatus");
     let cargoStatus = document.getElementById("cargoStatus");
     let launchStatus = document.getElementById("launchStatus");
+
+    if ((validateInput(pilot) === "Empty") || (validateInput(copilot) === "Empty") || (validateInput(cargoMass) === "Empty") || (validateInput(fuelLevel) === "Empty")) {
+        alert("Entry for every feild required!");
+        list.style.visibility = "hidden";
+        launchStatus.style.color = "rgb(199, 37, 78)";
+        launchStatus.textContent = "Shuttle Not Ready for Launch";
+    }
+    else if ((validateInput(pilot) === "Is a Number") && (validateInput(cargoMass) === "Not a Number")  || (validateInput(copilot) === "Is a Number") && (validateInput(fuelLevel) === "Not a Number")) {
+        alert("Invalid input! Please enter Pilot/Copilot names as text and Fuel/Cargo Levels as integer(s).");
+        list.style.visibility = "hidden";
+        launchStatus.style.color = "rgb(199, 37, 78)";
+        launchStatus.textContent = "Shuttle Not Ready for Launch";
+    }
+    else if ((validateInput(copilot) === "Is a Number") && (validateInput(cargoMass) === "Not a Number")  || (validateInput(pilot) === "Is a Number") && (validateInput(fuelLevel) === "Not a Number")) {
+        alert("Invalid input! Please enter Pilot/Copilot names as text and Fuel/Cargo Levels as integer(s).");
+        list.style.visibility = "hidden";
+        launchStatus.style.color = "rgb(199, 37, 78)";
+        launchStatus.textContent = "Shuttle Not Ready for Launch";
+    }
+    else if ((validateInput(pilot) === "Is a Number") || (validateInput(copilot) === "Is a Number")) {
+        alert("Invalid input! Please enter Pilot/Copilot names as text.")
+        list.style.visibility = "hidden";
+        launchStatus.style.color = "rgb(199, 37, 78)";
+        launchStatus.textContent = "Shuttle Not Ready for Launch";
+    }
+    else if ((validateInput(fuelLevel) === "Not a Number") || (validateInput(cargoMass) === "Not a Number")) {
+        alert("Invalid input! Please enter Fuel/Cargo Levels as integer(s).")
+        list.style.visibility = "hidden";
+        launchStatus.style.color = "rgb(199, 37, 78)";
+        launchStatus.textContent = "Shuttle Not Ready for Launch";
+    }
+
+
+
+
+
+
     
-    let listVis = document.querySelecter("#faultyItems")
-    let isReady = true;
-
-    pilotStatus.textContent = `Pilot ${pilot} is ready for launch`;
-    copilotStatus.textContent = `Co-Pilot ${pilot} is ready for launch`;
-
-    if (fuelLevel < 10000 && cargoLevel > 10000) {
-        listVis.style.visibility = "visible";
+    else if (fuelLevel < 10000 && cargoMass > 10000) {
+        list.style.visibility = "visible";
         launchStatus.style.color = "rgb(199, 37, 78)";
         launchStatus.textContent = "Shuttle Not Ready for Launch";
         fuelStatus.textContent = "Fuel level too low for launch";
         cargoStatus.textContent = "Cargo mass too heavy for launch";
-        isReady = false;
+        
     }
     else if (fuelLevel < 10000) {
-        listVis.style.visibility = "visible";
+        list.style.visibility = "visible";
         launchStatus.style.color = "rgb(199, 37, 78)";
         launchStatus.textContent = "Shuttle Not Ready for Launch";
         fuelStatus.textContent = "Fuel level too low for launch";
         cargoStatus.textContent = "Cargo mass low enough for launch";
-        isReady = false;
+        
     }
-    else if (cargoLevel > 10000) {
-        listVis.style.visibility = "visible";
+    else if (cargoMass > 10000) {
+        list.style.visibility = "visible";
         launchStatus.style.color = "rgb(199, 37, 78)";
         launchStatus.textContent = "Shuttle Not Ready for Launch";
         fuelStatus.textContent = "Fuel level high enough for launch";
         cargoStatus.textContent = "Cargo mass too heavy for launch";
-        isReady = false;
+       
     }
     else {
-        
-        listVis.style.visibility = "visible";
+        pilotStatus.textContent = `Pilot ${pilot} is ready for launch`;
+        copilotStatus.textContent = `Co-Pilot ${copilot} is ready for launch`;
+        list.style.visibility = "hidden";
         launchStatus.style.color = "rgb(65, 159, 106)";
         launchStatus.textContent = "Shuttle is Ready for Launch";
-        fuelStatus.textContent = "Fuel level high enough for launch";
-        cargoStatus.textContent = "Cargo mass low enough for launch";
-        isReady = true;
     }
  
 }
@@ -119,10 +134,8 @@ async function myFetch() {
 // delete loop, make i a variable, include logic, and return plantes with the variable in brackets for the relating data type 
 // correct syntax for math, look for examples online
 function pickPlanet(planets) {
-    
-        let i = Math.floor(Math.random() * planets.length);
-        return planets[i];
-    
+    //let index = Math.floor(Math.random() * planets.length);
+        return planets[Math.floor(Math.random() * planets.length)];
 }
 
 module.exports.addDestinationInfo = addDestinationInfo;
